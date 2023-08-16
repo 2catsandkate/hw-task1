@@ -1,0 +1,47 @@
+- hosts: centos-hw-task1
+  tasks:
+    - name: disable SELnuix
+      selinux:
+        state: disabled
+
+    - name: install the latest version of Apache
+      yum:
+        name: httpd
+        state: latest   
+
+    - name: Start service httpd, if not started
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Download template
+      get_url:
+        url: https://www.free-css.com/assets/files/free-css-templates/download/page294/jobentry.zip
+        dest: /tmp/    
+
+    - name: install unzip
+      yum:
+        name: unzip
+        state: latest
+
+    - name: Unarchive a file that is already on the remote machine
+      unarchive:
+        src: /tmp/jobentry.zip
+        dest: /var/www/html
+        remote_src: yes
+
+    - name: Move template files
+      shell: mv /var/www/html/job-portal-website-template/* /var/www/html/
+      args:
+        creates: /var/www/html/index.html
+
+    - name: recursive change ownership of a directory
+      file:
+        path: /var/www/html
+        state: directory
+        recurse: yes
+        owner: apache
+        group: apache
+
+    
